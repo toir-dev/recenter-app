@@ -1,0 +1,184 @@
+{
+  "common": {
+    "appName": "Recenter",
+    "sos": "SOS Assistance",
+    "comingSoon": "Coming soon",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "languages": {
+    "en": {
+      "label": "English",
+      "native": "English"
+    },
+    "ar": {
+      "label": "Arabic",
+      "native": "العربية"
+    },
+    "fr": {
+      "label": "French",
+      "native": "Français"
+    },
+    "da": {
+      "label": "Darija",
+      "native": "الدارجة"
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "tools": "Tools",
+    "learn": "Learn",
+    "journal": "Journal",
+    "progress": "Progress"
+  },
+  "dev": {
+    "languageCard": {
+      "title": "Language",
+      "subtitle": "Switch languages for QA and preview."
+    }
+  },
+  "home": {
+    "subtitle": "Choose a path to recenter your mind and body.",
+    "cta": "Explore tools",
+    "gallery": {
+      "title": "Interface components",
+      "subtitle": "Gallery of tokens and primitives rendered across supported themes.",
+      "themeLight": "Light theme",
+      "themeDark": "Dark theme",
+      "buttons": {
+        "primary": "Primary",
+        "secondary": "Secondary",
+        "outline": "Outline"
+      },
+      "cardTitle": "Daily toolkit",
+      "cardSubtitle": "Recommended practices tuned to your energy.",
+      "items": [
+        {
+          "id": "breathing",
+          "title": "Box breathing",
+          "subtitle": "4x cadence · 3 minutes"
+        },
+        {
+          "id": "scan",
+          "title": "Body scan reset",
+          "subtitle": "Full body awareness in 5 minutes"
+        }
+      ],
+      "toggle": {
+        "label": "Remind me to pause",
+        "description": "Send a gentle nudge mid-way through my work block."
+      },
+      "progress": {
+        "label": "Weekly practice"
+      }
+    }
+  },
+  "auth": {
+    "onboarding": {
+      "title": "Welcome to Recenter",
+      "subtitle": "Check in with a few preferences before you get started.",
+      "termsLabel": "Accept Terms of Service",
+      "termsDescription": "Required to create and use your Recenter account.",
+      "privacyLabel": "Accept Privacy Policy",
+      "privacyDescription": "Acknowledge how we handle and secure your data.",
+      "analyticsLabel": "Share anonymous usage analytics",
+      "analyticsDescription": "Help us improve features. This can be changed at any time.",
+      "disclaimer": "These choices stay on this device and can be updated later in settings.",
+      "termsLink": "View Terms of Service",
+      "privacyLink": "View Privacy Policy",
+      "continue": "Continue",
+      "errorRequired": "Please accept the terms and privacy policy to continue.",
+      "linkError": "Unable to open link. Please try again."
+    },
+    "callback": {
+      "message": "Finishing sign-in…"
+    },
+    "signIn": {
+      "title": "Sign in",
+      "subtitle": "Access your personalized practices.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "magicLinkCta": "Email me a magic link",
+      "magicLinkHelp": "We will send a secure, single-use link to your inbox.",
+      "magicLinkSent": "Magic link sent—check your email to finish signing in.",
+      "divider": "or continue with",
+      "googleCta": "Continue with Google",
+      "pending": "Waiting for authentication…",
+      "manageConsents": "Review consent & analytics preferences"
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "You are signed in as",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…",
+      "unknownUser": "Unknown user"
+    }
+  },
+  "tools": {
+    "title": "Tools",
+    "subtitle": "Quick practices to calm and refocus.",
+    "items": [
+      {
+        "id": "breathingReset",
+        "title": "Breathing reset",
+        "description": "4-7-8 cadence to slow your heart rate in two minutes."
+      },
+      {
+        "id": "bodyScan",
+        "title": "Body scan",
+        "description": "Notice where tension sits and gradually release it with awareness."
+      }
+    ]
+  },
+  "learn": {
+    "title": "Learn",
+    "subtitle": "Guides and lessons to deepen your practice.",
+    "lessons": [
+      {
+        "id": "nervousSystem",
+        "title": "Your nervous system basics",
+        "summary": "Understand fight, flight, and how to down-regulate quickly."
+      },
+      {
+        "id": "microBreaks",
+        "title": "Micro breaks that work",
+        "summary": "Small resets throughout the day compound into lasting calm."
+      }
+    ]
+  },
+  "journal": {
+    "title": "Journal",
+    "subtitle": "Capture thoughts, wins, and reflections.",
+    "placeholder": "How are you arriving today?"
+  },
+  "progress": {
+    "title": "Progress",
+    "subtitle": "Track streaks and celebrate growth.",
+    "metrics": [
+      {
+        "id": "streak",
+        "label": "Current streak",
+        "value": "5 days"
+      },
+      {
+        "id": "time",
+        "label": "Minutes practiced this week",
+        "value": "42 min"
+      },
+      {
+        "id": "mood",
+        "label": "Average mood check-in",
+        "value": "Balanced"
+      }
+    ]
+  },
+  "sos": {
+    "title": "SOS Assistance",
+    "body": "Ground yourself with immediate actions. Reach out to your support network or return to a calming practice.",
+    "primary": "Return to safety",
+    "secondary": "Try a grounding tool"
+  },
+  "breathCircle": {
+    "prompt": "Breathe"
+  }
+}

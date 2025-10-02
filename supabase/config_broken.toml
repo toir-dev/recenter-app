@@ -1,0 +1,6 @@
+# Update this file after running `npx supabase link --project-ref <project-ref>`.
+project_id = ""
+
+[db]
+schema = "public"
+

@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "recenter",
+    "slug": "recenter",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "recenter",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-light.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#F8FAFC",
+      "dark": {
+        "image": "./assets/images/splash-dark.png",
+        "backgroundColor": "#0F172A"
+      }
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "EXPO_PUBLIC_SUPABASE_URL": "https://fpuylmobdihltgyymzxj.supabase.co",
+      "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdXlsbW9iZGlobHRneXltenhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxNzM5NjAsImV4cCI6MjA3NDc0OTk2MH0.OF-ook0mnhkSc1oKLlGX3cv9q9saEX7Z4czaHLP_eY4",
+      "SUPABASE_URL": "https://fpuylmobdihltgyymzxj.supabase.co",
+      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwdXlsbW9iZGlobHRneXltenhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxNzM5NjAsImV4cCI6MjA3NDc0OTk2MH0.OF-ook0mnhkSc1oKLlGX3cv9q9saEX7Z4czaHLP_eY4",
+      "SUPABASE_PROJECT_ID": "fpuylmobdihltgyymzxj",
+      "EXPO_PUBLIC_TERMS_URL": "https://google.com",
+      "EXPO_PUBLIC_PRIVACY_URL": "https://google.com",
+      "router": {},
+      "eas": {
+        "projectId": "0030a764-77bb-4f01-b532-c5f43fb437eb"
+      }
+    }
+  }
+}
