@@ -54,10 +54,28 @@ export default function SignInScreen() {
   const handleGoogle = async () => {
     setFeedback(null);
     setError(null);
-    await signInWithGoogle();
+    const result = await signInWithGoogle();
+    if (!result.error) {
+      router.replace('/(tabs)');
+    }
   };
 
   const isPending = (action: 'email' | 'google') => pending === action;
+  const isRedirecting = pending === 'google';
+  const isAuthenticated = status === 'authenticated';
+
+  if (isRedirecting || isAuthenticated) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex-1 items-center justify-center gap-4 px-6">
+          <ActivityIndicator size="large" color={isDark ? '#a855f7' : '#4c1d95'} />
+          <Text className="text-base text-zinc-600 dark:text-zinc-300">
+            {t('auth.signIn.redirecting')}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -161,6 +179,8 @@ export default function SignInScreen() {
     </SafeAreaView>
   );
 }
+
+
 
 
 

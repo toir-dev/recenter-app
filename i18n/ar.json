@@ -104,7 +104,8 @@
       "divider": "or continue with",
       "googleCta": "Continue with Google",
       "pending": "Waiting for authentication…",
-      "manageConsents": "Review consent & analytics preferences"
+      "manageConsents": "Review consent & analytics preferences",
+      "redirecting": "Signing you in…"
     },
     "account": {
       "title": "Account",

@@ -26,7 +26,8 @@
         "backgroundColor": "#0F172A"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.recenter.app"
     },
     "web": {
       "bundler": "metro",

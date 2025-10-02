@@ -38,8 +38,8 @@ type AuthState = {
   initialize: () => Promise<void>;
   reloadProfile: () => Promise<void>;
   completeOnboarding: (consents: OnboardingConsents) => Promise<void>;
-  signInWithMagicLink: (email: string) => Promise<{ error?: string }>;
-  signInWithGoogle: () => Promise<{ error?: string }>;
+  signInWithMagicLink: (email: string) => Promise<{ error?: string; success?: boolean }>;
+  signInWithGoogle: () => Promise<{ error?: string; success?: boolean }>;
   signOut: () => Promise<void>;
 };
 
@@ -245,7 +245,7 @@ const applySessionParams = async (
       await persistSessionCache(data.session.user);
     }
 
-    return {};
+    return { success: true };
   }
 
   if (params.code) {
@@ -259,7 +259,7 @@ const applySessionParams = async (
       await persistSessionCache(data.session.user);
     }
 
-    return {};
+    return { success: true };
   }
 
   return { error: 'No session information returned.' };
@@ -506,7 +506,7 @@ export const useAuth = create<AuthState>()(
         return { error: message };
       }
 
-      return {};
+      return { success: true };
     },
     signInWithGoogle: async () => {
       if (!hasSupabaseConfig()) {
@@ -537,6 +537,11 @@ export const useAuth = create<AuthState>()(
         options: {
           redirectTo: redirectUri,
           skipBrowserRedirect: true,
+          queryParams: {
+            prompt: 'consent select_account',
+            access_type: 'offline',
+            include_granted_scopes: 'true',
+          },
         },
       });
 
@@ -552,31 +557,36 @@ export const useAuth = create<AuthState>()(
       if (data?.url) {
         const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUri);
 
-        set((state) => {
-          state.pending = null;
-        });
-
         if (result.type === 'success' && result.url) {
           const params = toSearchParams(result.url);
           const outcome = await applySessionParams(client, params);
           if (outcome.error) {
             set((state) => {
+              state.pending = null;
               state.error = outcome.error ?? 'Authentication failed.';
             });
             return { error: outcome.error };
           }
           await get().reloadProfile();
-          return {};
+          set((state) => {
+            state.pending = null;
+          });
+          return { success: true };
         }
 
         if (result.type === 'cancel' || result.type === 'dismiss') {
           const message = 'Sign-in was cancelled.';
           set((state) => {
+            state.pending = null;
             state.error = message;
           });
           return { error: message };
         }
 
+        set((state) => {
+          state.pending = null;
+          state.error = 'Authentication did not complete.';
+        });
         return { error: 'Authentication did not complete.' };
       }
 
@@ -631,6 +641,13 @@ export const applySessionFromUrl = async (url: string) => {
 
   return outcome;
 };
+
+
+
+
+
+
+
 
 
 
