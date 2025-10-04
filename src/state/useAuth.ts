@@ -171,6 +171,25 @@ const isProfileNotFound = (error: unknown) =>
   'code' in error &&
   (error as { code?: string }).code === 'PGRST116';
 
+const getSupabaseErrorCode = (error: unknown): string | undefined => {
+  if (typeof error !== 'object' || error === null || !('code' in error)) {
+    return undefined;
+  }
+
+  const code = (error as { code?: string }).code;
+  return code ? String(code).toUpperCase() : undefined;
+};
+
+const isProfileAccessDenied = (error: unknown) => getSupabaseErrorCode(error) === '42501';
+
+const logProfileWarning = (label: string, error: unknown) => {
+  if (isProfileAccessDenied(error)) {
+    return;
+  }
+
+  console.warn(label, error);
+};
+
 const requireSupabaseClient = (): SupabaseClient<Database> => {
   const client = getSupabaseClient();
   if (!client) {
@@ -351,10 +370,14 @@ export const useAuth = create<AuthState>()(
               state.profileError = null;
             });
           } catch (profileError) {
-            console.warn('[auth] Failed to load profile', profileError);
+            logProfileWarning('[auth] Failed to load profile', profileError);
+            const suppressed = isProfileAccessDenied(profileError);
             set((state) => {
-              state.profileError =
-                profileError instanceof Error ? profileError.message : 'Failed to load profile.';
+              state.profileError = suppressed
+                ? null
+                : profileError instanceof Error
+                ? profileError.message
+                : 'Failed to load profile.';
             });
           }
         } else if (cachedSession && Date.now() - cachedSession.lastSeenAt < OFFLINE_GRACE_MS) {
@@ -397,12 +420,14 @@ export const useAuth = create<AuthState>()(
                 state.profileError = null;
               });
             } catch (profileError) {
-              console.warn('[auth] profile refresh failed', profileError);
+              logProfileWarning('[auth] profile refresh failed', profileError);
+              const suppressed = isProfileAccessDenied(profileError);
               set((state) => {
-                state.profileError =
-                  profileError instanceof Error
-                    ? profileError.message
-                    : 'Failed to refresh profile.';
+                state.profileError = suppressed
+                  ? null
+                  : profileError instanceof Error
+                  ? profileError.message
+                  : 'Failed to refresh profile.';
               });
             }
           } else {
@@ -641,6 +666,10 @@ export const applySessionFromUrl = async (url: string) => {
 
   return outcome;
 };
+
+
+
+
 
 
 

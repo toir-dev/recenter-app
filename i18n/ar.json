@@ -129,6 +129,54 @@
         "title": "Body scan",
         "description": "Notice where tension sits and gradually release it with awareness."
       }
+    ],
+    "hero": {
+      "title": "SOS",
+      "subtitle": "Tap in an emergency"
+    },
+    "sections": {
+      "grounding": {
+        "title": "Grounding Tools",
+        "description": "Quick exercises to reconnect with the present."
+      },
+      "learn": {
+        "title": "Learn & More",
+        "description": "Understand DPDR and access support."
+      }
+    },
+    "tiles": [
+      {
+        "id": "breathe",
+        "title": "Breathe",
+        "description": "Calming exercises",
+        "icon": "wind"
+      },
+      {
+        "id": "fiveSenses",
+        "title": "5 Senses",
+        "description": "Use your senses",
+        "icon": "eye"
+      }
+    ],
+    "resources": [
+      {
+        "id": "realityChecks",
+        "title": "Reality Checks",
+        "description": "Question your surroundings",
+        "icon": "help-circle"
+      },
+      {
+        "id": "aboutDpdr",
+        "title": "About DPDR",
+        "description": "Understand your symptoms",
+        "icon": "book-open"
+      },
+      {
+        "id": "crisisResources",
+        "title": "Crisis Resources",
+        "description": "Get immediate help",
+        "icon": "life-buoy"
+      }
     ]
   },
   "learn": {
@@ -149,8 +197,44 @@
   },
   "journal": {
     "title": "Journal",
-    "subtitle": "Capture thoughts, wins, and reflections.",
-    "placeholder": "How are you arriving today?"
+    "cta": {
+      "quickEntry": {
+        "label": "Quick Entry"
+      },
+      "cbtTemplate": {
+        "label": "CBT Template"
+      }
+    },
+    "triggerLog": {
+      "title": "Trigger Log",
+      "filters": {
+        "calendar": "Calendar",
+        "search": "Search"
+      },
+      "items": [
+        {
+          "id": "socialEvent",
+          "title": "Social Event",
+          "intensityLabel": "Intensity: 7/10",
+          "intensityScore": 0.7,
+          "icon": "users"
+        },
+        {
+          "id": "workStress",
+          "title": "Work Stress",
+          "intensityLabel": "Intensity: 5/10",
+          "intensityScore": 0.5,
+          "icon": "briefcase"
+        },
+        {
+          "id": "familyGathering",
+          "title": "Family Gathering",
+          "intensityLabel": "Intensity: 3/10",
+          "intensityScore": 0.3,
+          "icon": "user-check"
+        }
+      ]
+    }
   },
   "progress": {
     "title": "Progress",
