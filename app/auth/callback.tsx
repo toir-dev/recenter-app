@@ -2,9 +2,10 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Text } from '@/components/Themed';
 import { useAuth } from '@/src/state';
 import { applySessionFromUrl } from '@/src/state/useAuth';
 
@@ -41,19 +42,40 @@ export default function AuthCallbackScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex-1 items-center justify-center gap-4 px-6">
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#4c1d95" />
-        <Text className="text-base text-zinc-600 dark:text-zinc-300">
+        <Text style={styles.message} lightColor="#52525b" darkColor="#d4d4d8">
           {t('auth.callback.message')}
         </Text>
         {error ? (
-          <Text className="text-sm text-red-600 dark:text-red-400 text-center">{error}</Text>
+          <Text style={styles.error} lightColor="#dc2626" darkColor="#f87171">
+            {error}
+          </Text>
         ) : null}
       </View>
     </SafeAreaView>
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    paddingHorizontal: 24,
+  },
+  message: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  error: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+});
 
 
 

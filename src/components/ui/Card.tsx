@@ -15,7 +15,6 @@ type CardProps = {
   contentStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
   subtitleStyle?: StyleProp<TextStyle>;
-  className?: string;
 };
 
 export function Card({
@@ -28,7 +27,6 @@ export function Card({
   contentStyle,
   titleStyle,
   subtitleStyle,
-  className,
 }: CardProps) {
   const scheme = useColorScheme();
   const resolved = resolveThemeName(theme ?? scheme);
@@ -36,7 +34,6 @@ export function Card({
 
   return (
     <View
-      className={className}
       style={[
         styles.base,
         {

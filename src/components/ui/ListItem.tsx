@@ -13,7 +13,6 @@ type ListItemProps = {
   onPress?: () => void;
   theme?: ThemeName;
   style?: StyleProp<ViewStyle>;
-  className?: string;
 };
 
 export function ListItem({
@@ -24,7 +23,6 @@ export function ListItem({
   onPress,
   theme,
   style,
-  className,
 }: ListItemProps) {
   const scheme = useColorScheme();
   const resolved = resolveThemeName(theme ?? scheme);
@@ -33,7 +31,6 @@ export function ListItem({
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
-      className={className}
       disabled={!onPress}
       onPress={onPress}
       style={({ pressed }) => [

@@ -1,9 +1,8 @@
-﻿/**
+/**
  * Learn more about Light and Dark modes:
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { cssInterop } from 'nativewind';
 import type { ComponentProps } from 'react';
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
@@ -19,8 +18,8 @@ type ThemeProps = {
 type DefaultTextProps = ComponentProps<typeof DefaultText>;
 type DefaultViewProps = ComponentProps<typeof DefaultView>;
 
-export type TextProps = ThemeProps & DefaultTextProps & { className?: string };
-export type ViewProps = ThemeProps & DefaultViewProps & { className?: string };
+export type TextProps = ThemeProps & DefaultTextProps;
+export type ViewProps = ThemeProps & DefaultViewProps;
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -37,27 +36,15 @@ export function useThemeColor(
 }
 
 export function Text(props: TextProps) {
-  const { style, className, lightColor, darkColor, ...otherProps } = props;
+  const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
-  return <DefaultText className={className} style={[{ color }, style]} {...otherProps} />;
+  return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
 export function View(props: ViewProps) {
-  const { style, className, lightColor, darkColor, ...otherProps } = props;
+  const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
-  return <DefaultView className={className} style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
-
-cssInterop(Text, {
-  className: {
-    target: 'style',
-  },
-});
-
-cssInterop(View, {
-  className: {
-    target: 'style',
-  },
-});

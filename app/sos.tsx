@@ -1,6 +1,6 @@
 ﻿import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 import '@/lib/i18n';
@@ -10,33 +10,20 @@ export default function SosScreen() {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-1 justify-center gap-6 px-6">
-      <View className="gap-2">
-        <Text className="text-4xl font-semibold text-rose-500">{t('sos.title')}</Text>
-        <Text className="text-base text-zinc-600 dark:text-zinc-300">{t('sos.body')}</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{t('sos.title')}</Text>
+        <Text style={styles.body} lightColor="#52525b" darkColor="#d4d4d8">
+          {t('sos.body')}
+        </Text>
       </View>
 
-      <View className="gap-3">
-        <Pressable
-          style={{
-            borderRadius: 24,
-            backgroundColor: '#ef4444',
-            paddingVertical: 16,
-            paddingHorizontal: 20,
-          }}
-          onPress={() => router.back()}>
-          <Text className="text-center text-base font-semibold text-white">{t('sos.primary')}</Text>
+      <View style={styles.actions}>
+        <Pressable style={styles.primaryAction} onPress={() => router.back()}>
+          <Text style={styles.primaryLabel}>{t('sos.primary')}</Text>
         </Pressable>
-        <Pressable
-          style={{
-            borderRadius: 24,
-            borderWidth: 1,
-            borderColor: '#e4e4e7',
-            paddingVertical: 16,
-            paddingHorizontal: 20,
-          }}
-          onPress={() => router.push('/tools')}>
-          <Text className="text-center text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <Pressable style={styles.secondaryAction} onPress={() => router.push('/tools')}>
+          <Text style={styles.secondaryLabel} lightColor="#18181b" darkColor="#fafafa">
             {t('sos.secondary')}
           </Text>
         </Pressable>
@@ -44,3 +31,51 @@ export default function SosScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 24,
+    paddingHorizontal: 24,
+  },
+  header: {
+    gap: 8,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: '600',
+    color: '#f43f5e',
+  },
+  body: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  actions: {
+    gap: 12,
+  },
+  primaryAction: {
+    borderRadius: 24,
+    backgroundColor: '#ef4444',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  primaryLabel: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  secondaryAction: {
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#e4e4e7',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  secondaryLabel: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

@@ -15,12 +15,18 @@ WebBrowser.maybeCompleteAuthSession();
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 type AuthStatus = 'loading' | 'unauthenticated' | 'authenticated';
-type PendingAction = 'email' | 'google' | null;
+type PendingAction = 'email' | 'google' | 'password' | 'signup' | null;
 
-export type OnboardingConsents = {
+export type ConsentPreferences = {
   termsAccepted: boolean;
-  privacyAccepted: boolean;
   analytics: boolean;
+};
+
+type SignUpParams = {
+  firstName: string;
+  email: string;
+  password: string;
+  termsAccepted: boolean;
 };
 
 type AuthState = {
@@ -28,16 +34,19 @@ type AuthState = {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
-  consents: OnboardingConsents;
+  consents: ConsentPreferences;
   needsOnboarding: boolean;
   initialized: boolean;
   pending: PendingAction;
   error: string | null;
   profileError: string | null;
   setError: (message: string | null) => void;
+  setConsents: (updates: Partial<ConsentPreferences>) => Promise<void>;
   initialize: () => Promise<void>;
   reloadProfile: () => Promise<void>;
-  completeOnboarding: (consents: OnboardingConsents) => Promise<void>;
+  completeOnboarding: () => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<{ error?: string; success?: boolean }>;
+  signUpWithEmail: (params: SignUpParams) => Promise<{ error?: string; success?: boolean }>;
   signInWithMagicLink: (email: string) => Promise<{ error?: string; success?: boolean }>;
   signInWithGoogle: () => Promise<{ error?: string; success?: boolean }>;
   signOut: () => Promise<void>;
@@ -51,6 +60,7 @@ const CONSENT_KEYS = {
   privacy: 'consent.privacy',
   analytics: 'consent.analytics',
 };
+const ONBOARDING_COMPLETE_KEY = 'onboarding.completed';
 const SUPABASE_MISSING_MESSAGE =
   'Supabase is not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY before running the app.';
 
@@ -62,26 +72,38 @@ type CachedSession = {
 const parseBool = (value: string | null) => value === '1';
 const serializeBool = (value: boolean) => (value ? '1' : '0');
 
-const loadConsents = async (): Promise<OnboardingConsents> => {
-  const [terms, privacy, analytics] = await Promise.all([
+const loadConsents = async (): Promise<ConsentPreferences> => {
+  const [terms, privacyLegacy, analytics] = await Promise.all([
     secureStore.getItem(CONSENT_KEYS.terms),
     secureStore.getItem(CONSENT_KEYS.privacy),
     secureStore.getItem(CONSENT_KEYS.analytics),
   ]);
 
   return {
-    termsAccepted: parseBool(terms),
-    privacyAccepted: parseBool(privacy),
+    termsAccepted: parseBool(terms) || parseBool(privacyLegacy),
     analytics: parseBool(analytics),
   };
 };
 
-const persistConsents = async (consents: OnboardingConsents) => {
+const persistConsents = async (consents: ConsentPreferences) => {
   await Promise.all([
     secureStore.setItem(CONSENT_KEYS.terms, serializeBool(consents.termsAccepted)),
-    secureStore.setItem(CONSENT_KEYS.privacy, serializeBool(consents.privacyAccepted)),
+    secureStore.setItem(CONSENT_KEYS.privacy, serializeBool(consents.termsAccepted)),
     secureStore.setItem(CONSENT_KEYS.analytics, serializeBool(consents.analytics)),
   ]);
+};
+
+const loadOnboardingStatus = async (): Promise<boolean> => {
+  const value = await secureStore.getItem(ONBOARDING_COMPLETE_KEY);
+  return parseBool(value);
+};
+
+const persistOnboardingStatus = async (completed: boolean) => {
+  if (completed) {
+    await secureStore.setItem(ONBOARDING_COMPLETE_KEY, serializeBool(true));
+    return;
+  }
+  await secureStore.removeItem(ONBOARDING_COMPLETE_KEY);
 };
 
 const loadProfileCache = async (): Promise<Profile | null> => {
@@ -141,8 +163,10 @@ const persistSessionCache = async (user: User | null) => {
   await secureStore.setItem(SESSION_CACHE_KEY, JSON.stringify(payload));
 };
 
-const computeNeedsOnboarding = (consents: OnboardingConsents) =>
-  !(consents.termsAccepted && consents.privacyAccepted);
+const computeNeedsOnboarding = (
+  onboardingCompleted: boolean,
+  consents: ConsentPreferences
+) => (onboardingCompleted ? false : !consents.termsAccepted);
 
 const redirectUri = AuthSession.makeRedirectUri({
   path: 'auth/callback',
@@ -295,7 +319,6 @@ export const useAuth = create<AuthState>()(
     profile: null,
     consents: {
       termsAccepted: false,
-      privacyAccepted: false,
       analytics: false,
     },
     needsOnboarding: true,
@@ -308,6 +331,20 @@ export const useAuth = create<AuthState>()(
         state.error = message;
       });
     },
+    setConsents: async (updates) => {
+      const current = get().consents;
+      const next = { ...current, ...updates };
+      await persistConsents(next);
+      if (next.termsAccepted) {
+        await persistOnboardingStatus(true);
+      }
+      set((state) => {
+        state.consents = next;
+        if (next.termsAccepted) {
+          state.needsOnboarding = false;
+        }
+      });
+    },
     initialize: async () => {
       if (get().initialized) {
         return;
@@ -318,15 +355,16 @@ export const useAuth = create<AuthState>()(
         state.error = null;
       });
 
-      const [consents, cachedProfile, cachedSession] = await Promise.all([
+      const [consents, cachedProfile, cachedSession, onboardingCompleted] = await Promise.all([
         loadConsents(),
         loadProfileCache(),
         loadSessionCache(),
+        loadOnboardingStatus(),
       ]);
 
       set((state) => {
         state.consents = consents;
-        state.needsOnboarding = computeNeedsOnboarding(consents);
+        state.needsOnboarding = computeNeedsOnboarding(onboardingCompleted, consents);
         if (cachedProfile) {
           state.profile = cachedProfile;
         }
@@ -472,12 +510,168 @@ export const useAuth = create<AuthState>()(
         });
       }
     },
-    completeOnboarding: async (consents) => {
-      await persistConsents(consents);
+    completeOnboarding: async () => {
+      await persistOnboardingStatus(true);
       set((state) => {
-        state.consents = consents;
-        state.needsOnboarding = computeNeedsOnboarding(consents);
+        state.needsOnboarding = false;
       });
+    },
+    signInWithPassword: async (email, password) => {
+      if (!hasSupabaseConfig()) {
+        set((state) => {
+          state.error = SUPABASE_MISSING_MESSAGE;
+        });
+        return { error: SUPABASE_MISSING_MESSAGE };
+      }
+
+      const trimmedEmail = email.trim().toLowerCase();
+      if (!trimmedEmail || !password) {
+        const message = 'Email and password are required.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      const client = requireSupabaseClient();
+
+      set((state) => {
+        state.pending = 'password';
+        state.error = null;
+      });
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email: trimmedEmail,
+        password,
+      });
+
+      set((state) => {
+        state.pending = null;
+      });
+
+      if (error) {
+        const message = error.message ?? 'Sign-in failed.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      const session = data?.session ?? null;
+
+      if (session?.user) {
+        await persistSessionCache(session.user);
+        set((state) => {
+          state.session = session;
+          state.user = session.user;
+          state.status = 'authenticated';
+          state.error = null;
+        });
+        await get().reloadProfile();
+      }
+
+      return { success: true };
+    },
+    signUpWithEmail: async ({ firstName, email, password, termsAccepted }) => {
+      if (!hasSupabaseConfig()) {
+        set((state) => {
+          state.error = SUPABASE_MISSING_MESSAGE;
+        });
+        return { error: SUPABASE_MISSING_MESSAGE };
+      }
+
+      const trimmedName = firstName.trim();
+      const trimmedEmail = email.trim().toLowerCase();
+
+      if (!trimmedName) {
+        const message = 'First name is required.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      if (!trimmedEmail) {
+        const message = 'Email is required.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      if (!password) {
+        const message = 'Password is required.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      if (!termsAccepted) {
+        const message = 'Please accept the terms before continuing.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      const client = requireSupabaseClient();
+
+      set((state) => {
+        state.pending = 'signup';
+        state.error = null;
+      });
+
+      const { data, error } = await client.auth.signUp({
+        email: trimmedEmail,
+        password,
+        options: {
+          data: {
+            first_name: trimmedName,
+          },
+        },
+      });
+
+      set((state) => {
+        state.pending = null;
+      });
+
+      if (error) {
+        const message = error.message ?? 'Sign-up failed.';
+        set((state) => {
+          state.error = message;
+        });
+        return { error: message };
+      }
+
+      const user = data?.user ?? null;
+      const session = data?.session ?? null;
+
+      if (user?.id) {
+        await get().setConsents({ termsAccepted: true });
+        try {
+          await bootstrapProfile(client, user.id);
+          await client
+            .from('profiles')
+            .update({ display_name: trimmedName })
+            .eq('id', user.id);
+        } catch (profileError) {
+          logProfileWarning('[auth] sign-up profile bootstrap failed', profileError);
+        }
+      }
+
+      if (session?.user) {
+        await persistSessionCache(session.user);
+        set((state) => {
+          state.session = session;
+          state.user = session.user;
+          state.status = 'authenticated';
+          state.error = null;
+        });
+        await get().reloadProfile();
+      }
+
+      return { success: true };
     },
     signInWithMagicLink: async (email) => {
       if (!hasSupabaseConfig()) {
@@ -489,15 +683,6 @@ export const useAuth = create<AuthState>()(
 
       if (!email) {
         const message = 'Email is required.';
-        set((state) => {
-          state.error = message;
-        });
-        return { error: message };
-      }
-
-      const { needsOnboarding } = get();
-      if (needsOnboarding) {
-        const message = 'Please accept the terms before continuing.';
         set((state) => {
           state.error = message;
         });
@@ -539,15 +724,6 @@ export const useAuth = create<AuthState>()(
           state.error = SUPABASE_MISSING_MESSAGE;
         });
         return { error: SUPABASE_MISSING_MESSAGE };
-      }
-
-      const { needsOnboarding } = get();
-      if (needsOnboarding) {
-        const message = 'Please accept the terms before continuing.';
-        set((state) => {
-          state.error = message;
-        });
-        return { error: message };
       }
 
       const client = requireSupabaseClient();
@@ -592,6 +768,7 @@ export const useAuth = create<AuthState>()(
             });
             return { error: outcome.error };
           }
+          await get().setConsents({ termsAccepted: true });
           await get().reloadProfile();
           set((state) => {
             state.pending = null;

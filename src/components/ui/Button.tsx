@@ -14,7 +14,6 @@ type ButtonProps = {
   theme?: ThemeName;
   style?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
-  className?: string;
 };
 
 export function Button({
@@ -25,7 +24,6 @@ export function Button({
   theme,
   style,
   labelStyle,
-  className,
 }: ButtonProps) {
   const scheme = useColorScheme();
   const resolved = resolveThemeName(theme ?? scheme);
@@ -48,7 +46,6 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      className={className}
       disabled={disabled}
       onPress={onPress}
       style={[

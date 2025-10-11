@@ -18,10 +18,6 @@
     "fr": {
       "label": "French",
       "native": "Français"
-    },
-    "da": {
-      "label": "Darija",
-      "native": "الدارجة"
     }
   },
   "tabs": {
@@ -75,37 +71,77 @@
   },
   "auth": {
     "onboarding": {
-      "title": "Welcome to Recenter",
-      "subtitle": "Check in with a few preferences before you get started.",
-      "termsLabel": "Accept Terms of Service",
-      "termsDescription": "Required to create and use your Recenter account.",
-      "privacyLabel": "Accept Privacy Policy",
-      "privacyDescription": "Acknowledge how we handle and secure your data.",
-      "analyticsLabel": "Share anonymous usage analytics",
-      "analyticsDescription": "Help us improve features. This can be changed at any time.",
-      "disclaimer": "These choices stay on this device and can be updated later in settings.",
-      "termsLink": "View Terms of Service",
-      "privacyLink": "View Privacy Policy",
-      "continue": "Continue",
-      "errorRequired": "Please accept the terms and privacy policy to continue.",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Recenter",
+          "description": "We help you calm your nervous system, reconnect with your body, and feel present again."
+        },
+        "practice": {
+          "title": "Build your toolkit",
+          "description": "Explore grounding tools, guided practices, and journaling prompts built for moments of DPDR."
+        },
+        "ready": {
+          "title": "Track steady progress",
+          "description": "Check in daily, reflect on triggers, and watch patterns shift as you practice."
+        }
+      },
+      "next": "Next",
+      "getStarted": "Get started",
+      "skip": "Skip",
+      "agreementPrefix": "By continuing you agree to our",
+      "agreementConnector": "and",
+      "termsLink": "Terms of Service",
+      "privacyLink": "Privacy Policy",
       "linkError": "Unable to open link. Please try again."
     },
     "callback": {
       "message": "Finishing sign-in…"
     },
     "signIn": {
-      "title": "Sign in",
-      "subtitle": "Access your personalized practices.",
-      "emailLabel": "Email address",
+      "title": "مرحبًا بك في Recenter",
+      "subtitle": "سجّل الدخول أو أنشئ حسابًا للحفاظ على أدواتك متزامنة.",
+      "tagline": "الهدوء يبدأ من هنا",
+      "heroFootnote": "خصوصيتك وأمانك أولوية لديك.",
+      "emailLabel": "عنوان البريد الإلكتروني",
       "emailPlaceholder": "you@example.com",
-      "magicLinkCta": "Email me a magic link",
-      "magicLinkHelp": "We will send a secure, single-use link to your inbox.",
-      "magicLinkSent": "Magic link sent—check your email to finish signing in.",
-      "divider": "or continue with",
-      "googleCta": "Continue with Google",
-      "pending": "Waiting for authentication…",
-      "manageConsents": "Review consent & analytics preferences",
-      "redirecting": "Signing you in…"
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "********",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "firstNameLabel": "الاسم الأول",
+      "firstNamePlaceholder": "سارة",
+      "continueCta": "متابعة",
+      "finishCta": "إكمال الإعداد",
+      "loginTab": "تسجيل الدخول",
+      "signupTab": "إنشاء حساب",
+      "moreOptions": "خيارات إضافية",
+      "lessOptions": "إخفاء الخيارات",
+      "googleCta": "المتابعة عبر Google",
+      "pending": "جارٍ انتظار المصادقة...",
+      "redirecting": "جارٍ تسجيل الدخول...",
+      "signupMissingFields": "يرجى إكمال جميع الحقول المطلوبة.",
+      "emailPasswordRequired": "البريد الإلكتروني وكلمة المرور مطلوبان.",
+      "signupSuccess": "تم إنشاء الحساب. تحقق من بريدك الإلكتروني للتأكيد.",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+      "noAccount": "ليس لدي حساب، أريد إنشاء حساب",
+      "haveAccount": "لدي حساب بالفعل",
+      "primaryConsent": {
+        "title": "أوافق على السياسات المهمة",
+        "description": "راجع سياساتنا ووافق عليها قبل المتابعة.",
+        "hint": "مطلوبة لإنشاء حسابك وحمايته."
+      },
+      "consentRequired": "يرجى قبول الشروط قبل المتابعة.",
+      "openSettings": "فتح الإعدادات السريعة",
+      "quickSettings": "الإعدادات السريعة",
+      "quickSettingsHint": "اضبط السمة واللغة التي تفضلها.",
+      "themeToggleLight": "التبديل إلى الوضع الفاتح",
+      "themeToggleDark": "التبديل إلى الوضع الداكن",
+      "languageTitle": "اللغة",
+      "compactTitle": "مرحبًا بعودتك",
+      "compactSubtitle": "سجّل الدخول للمتابعة",
+      "noAccountPrompt": "ليس لديك حساب؟",
+      "haveAccountPrompt": "لديك حساب بالفعل؟",
+      "signUpLink": "سجّل",
+      "signInLink": "سجّل الدخول"
     },
     "account": {
       "title": "Account",

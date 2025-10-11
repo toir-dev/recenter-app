@@ -1,6 +1,6 @@
-﻿export type ThemeName = 'light' | 'dark';
+export type ThemeName = 'light' | 'dark';
 
-type ThemePalette = {
+export type ThemePalette = {
   primary: string;
   mint: string;
   accent: string;
@@ -49,3 +49,4 @@ export const resolveThemeName = (theme?: ThemeCandidate): ThemeName => {
 
   return 'light';
 };
+

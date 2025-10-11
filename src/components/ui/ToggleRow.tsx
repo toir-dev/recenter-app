@@ -12,7 +12,6 @@ type ToggleRowProps = {
   theme?: ThemeName;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  className?: string;
 };
 
 export function ToggleRow({
@@ -23,7 +22,6 @@ export function ToggleRow({
   theme,
   disabled = false,
   style,
-  className,
 }: ToggleRowProps) {
   const scheme = useColorScheme();
   const resolved = resolveThemeName(theme ?? scheme);
@@ -31,7 +29,6 @@ export function ToggleRow({
 
   return (
     <View
-      className={className}
       style={[
         styles.base,
         {

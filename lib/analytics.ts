@@ -1,34 +1,63 @@
-﻿import PostHog from 'posthog-react-native';
+﻿import type PostHog from "posthog-react-native";
 
-type PostHogClient = PostHog | null;
+type PostHogInstance = PostHog | null;
 
-let client: PostHogClient = null;
+let client: PostHogInstance = null;
+let loadTask: Promise<PostHogInstance> | null = null;
 let optedIn = false;
+let warned = false;
 
 const getConfig = () => ({
   apiKey: process.env.EXPO_PUBLIC_POSTHOG_KEY,
-  host: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? 'https://app.posthog.com',
+  host: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://app.posthog.com",
 });
 
-export const ensurePostHog = () => {
-  if (client) {
-    return client;
-  }
-
+const createClient = async (): Promise<PostHogInstance> => {
   const { apiKey, host } = getConfig();
 
   if (!apiKey) {
     return null;
   }
 
-  client = new PostHog(apiKey, {
-    host,
-    captureAppLifecycleEvents: true,
-    defaultOptIn: false,
-  });
+  try {
+    const module = await import("posthog-react-native");
+    const PostHogCtor = module.default as typeof PostHog;
 
-  if (optedIn) {
-    client.optIn();
+    client = new PostHogCtor(apiKey, {
+      host,
+      captureAppLifecycleEvents: true,
+      defaultOptIn: false,
+    });
+
+    if (optedIn) {
+      client.optIn();
+    }
+
+    return client;
+  } catch (error) {
+    if (!warned) {
+      console.warn("[analytics] PostHog native module unavailable, analytics disabled.", error);
+      warned = true;
+    }
+    client = null;
+    return null;
+  }
+};
+
+export const ensurePostHog = async (): Promise<PostHogInstance> => {
+  if (client) {
+    return client;
+  }
+
+  if (!loadTask) {
+    loadTask = createClient().finally(() => {
+      loadTask = null;
+    });
+  }
+
+  const instance = await loadTask;
+  if (!instance) {
+    client = null;
   }
 
   return client;
@@ -36,7 +65,7 @@ export const ensurePostHog = () => {
 
 export const setAnalyticsOptIn = async (value: boolean) => {
   optedIn = value;
-  const instance = ensurePostHog();
+  const instance = await ensurePostHog();
   if (!instance) {
     return null;
   }

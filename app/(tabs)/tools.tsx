@@ -1,23 +1,26 @@
-﻿import Feather from '@expo/vector-icons/Feather';
+import Feather from '@expo/vector-icons/Feather';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
-import Animated, { 
+import Animated, {
+  Easing,
   FadeInUp,
   useAnimatedStyle,
-  withSpring,
   useSharedValue,
-  Easing
+  withSpring,
 } from 'react-native-reanimated';
+
+import { type ThemeName } from '@/src/theme/colors';
+import { useThemeScheme, useThemeTokens } from '@/src/theme/provider';
+import { type ThemeTokens } from '@/src/theme/tokens';
 
 type ToolTile = {
   id: string;
@@ -57,19 +60,19 @@ const resourceIconMap: Record<string, React.ComponentProps<typeof Feather>['name
   crisisResources: 'life-buoy',
 };
 
-type Theme = 'light' | 'dark';
-
-const createStyles = (theme: Theme) => {
-  const isDark = theme === 'dark';
-  const background = isDark ? '#101c22' : '#f6f7f8';
-  const surface = isDark ? '#1a2831' : '#ffffff';
-  const mutedSurface = isDark ? '#0b1220' : '#f1f5f9';
-  const border = isDark ? 'rgba(148, 163, 184, 0.16)' : '#e2e8f0';
-  const textPrimary = isDark ? '#f8fafc' : '#0f172a';
-  const textSecondary = isDark ? '#94a3b8' : '#475569';
+const createStyles = (tokens: ThemeTokens, scheme: ThemeName) => {
+  const isDark = scheme === 'dark';
+  const background = tokens.background;
+  const surface = tokens.surface;
+  const mutedSurface = tokens.surfaceMuted;
+  const border = tokens.border;
+  const textPrimary = tokens.text;
+  const textSecondary = tokens.muted;
+  const accent = tokens.primary;
+  const shadowColor = accent;
   const tileShadow = isDark
-    ? { shadowColor: '#13a4ec', shadowOpacity: 0.25, shadowRadius: 18, elevation: 10 }
-    : { shadowColor: '#13a4ec', shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 };
+    ? { shadowColor, shadowOpacity: 0.28, shadowRadius: 22, elevation: 12 }
+    : { shadowColor, shadowOpacity: 0.16, shadowRadius: 16, elevation: 8 };
 
   return StyleSheet.create({
     screen: {
@@ -80,6 +83,7 @@ const createStyles = (theme: Theme) => {
       paddingHorizontal: 24,
       paddingVertical: 32,
       gap: 32,
+      backgroundColor: background,
     },
     heroWrapper: {
       alignItems: 'center',
@@ -91,21 +95,24 @@ const createStyles = (theme: Theme) => {
       borderRadius: 110,
       alignItems: 'center',
       justifyContent: 'center',
-      shadowColor: '#13a4ec',
-      shadowOpacity: 0.5,
-      shadowRadius: 24,
+      shadowColor,
+      shadowOpacity: 0.42,
+      shadowRadius: 28,
       shadowOffset: { width: 0, height: 18 },
       elevation: 24,
     },
     heroTitle: {
       fontSize: 36,
       fontWeight: '700',
-      color: '#ffffff',
+      color: tokens.onPrimary,
     },
     heroSubtitle: {
       fontSize: 16,
       color: textSecondary,
       textAlign: 'center',
+    },
+    sectionGroup: {
+      gap: 18,
     },
     sectionHeader: {
       gap: 8,
@@ -127,7 +134,7 @@ const createStyles = (theme: Theme) => {
     tileCard: {
       backgroundColor: surface,
       borderRadius: 28,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
       padding: 20,
       flexBasis: '48%',
@@ -146,6 +153,7 @@ const createStyles = (theme: Theme) => {
     },
     tileTextContainer: {
       flex: 1,
+      gap: 4,
     },
     tileTitle: {
       fontSize: 17,
@@ -162,15 +170,15 @@ const createStyles = (theme: Theme) => {
     resourceCard: {
       backgroundColor: surface,
       borderRadius: 24,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       borderColor: border,
       paddingHorizontal: 20,
       paddingVertical: 18,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 16,
-      shadowColor: isDark ? '#020617' : '#020817',
-      shadowOpacity: 0.18,
+      shadowColor,
+      shadowOpacity: isDark ? 0.22 : 0.14,
       shadowRadius: 20,
       shadowOffset: { width: 0, height: 12 },
       elevation: 12,
@@ -188,9 +196,6 @@ const createStyles = (theme: Theme) => {
       fontSize: 14,
       color: textSecondary,
     },
-    sectionGroup: {
-      gap: 18,
-    },
   });
 };
 
@@ -199,9 +204,11 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 export default function ToolsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const systemScheme = useColorScheme();
-  const theme: Theme = systemScheme === 'dark' ? 'dark' : 'light';
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const scheme = useThemeScheme();
+  const tokens = useThemeTokens();
+  const styles = useMemo(() => createStyles(tokens, scheme), [tokens, scheme]);
+  const gradientColors = useMemo(() => [tokens.primary, tokens.accent] as const, [tokens]);
+  const iconAccent = tokens.primary;
 
   const scale = useSharedValue(1);
 
@@ -233,18 +240,18 @@ export default function ToolsScreen() {
       style={styles.screen}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}>
-      <Animated.View 
+      <Animated.View
         entering={FadeInUp.duration(500).easing(Easing.out(Easing.ease))}
         style={styles.heroWrapper}>
         <AnimatedPressable
           accessibilityRole="button"
           accessibilityLabel={t('common.sos')}
-          onPress={() => router.push('/sos')}
+          onPress={() => router.push('/screens/GroundingScreen')}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           style={animatedButtonStyle}>
           <LinearGradient
-            colors={['#13a4ec', '#A6F0C6']}
+            colors={gradientColors}
             style={styles.heroGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}>
@@ -261,15 +268,16 @@ export default function ToolsScreen() {
         </View>
 
         <View style={styles.tileGrid}>
-          {tiles.map((tile) => {
-            const iconName = tileIconMap[tile.id] ?? (tile.icon as React.ComponentProps<typeof Feather>['name']) ?? iconFallback;
+          {tiles.map((tile, index) => {
+            const iconName =
+              tileIconMap[tile.id] ?? (tile.icon as React.ComponentProps<typeof Feather>['name']) ?? iconFallback;
             return (
-              <Animated.View 
+              <Animated.View
                 key={tile.id}
-                entering={FadeInUp.duration(600).delay(200).easing(Easing.out(Easing.ease))}
+                entering={FadeInUp.duration(600).delay(120 + index * 60).easing(Easing.out(Easing.ease))}
                 style={styles.tileCard}>
                 <View style={styles.tileIcon}>
-                  <Feather name={iconName} size={26} color="#13a4ec" />
+                  <Feather name={iconName} size={26} color={iconAccent} />
                 </View>
                 <View style={styles.tileTextContainer}>
                   <Text style={styles.tileTitle}>{tile.title}</Text>
@@ -288,19 +296,20 @@ export default function ToolsScreen() {
         </View>
 
         <View style={styles.resourceList}>
-          {resources.map((resource) => {
-            const iconName = resourceIconMap[resource.id] ?? (resource.icon as React.ComponentProps<typeof Feather>['name']) ?? iconFallback;
+          {resources.map((resource, index) => {
+            const iconName =
+              resourceIconMap[resource.id] ?? (resource.icon as React.ComponentProps<typeof Feather>['name']) ?? iconFallback;
             return (
-              <Animated.View 
+              <Animated.View
                 key={resource.id}
-                entering={FadeInUp.duration(600).delay(300).easing(Easing.out(Easing.ease))}
+                entering={FadeInUp.duration(600).delay(200 + index * 60).easing(Easing.out(Easing.ease))}
                 style={styles.resourceCard}>
-                <Feather name={iconName} size={24} color="#13a4ec" />
+                <Feather name={iconName} size={24} color={iconAccent} />
                 <View style={styles.resourceText}>
                   <Text style={styles.resourceTitle}>{resource.title}</Text>
                   <Text style={styles.resourceCopy}>{resource.description}</Text>
                 </View>
-                <Feather name="chevron-right" size={20} color="#13a4ec" />
+                <Feather name="chevron-right" size={20} color={iconAccent} />
               </Animated.View>
             );
           })}

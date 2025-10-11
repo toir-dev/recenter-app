@@ -1,4 +1,3 @@
-﻿import '../nativewind.css';
 import 'react-native-gesture-handler';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -18,6 +17,7 @@ import '@/lib/i18n';
 import { runMigrations } from '@/src/db/sqlite';
 import { useAuth } from '@/src/state';
 import { applySessionFromUrl } from '@/src/state/useAuth';
+import { AppThemeProvider } from '@/src/theme/provider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -91,7 +91,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <AppThemeProvider>
+      <RootLayoutNav />
+    </AppThemeProvider>
+  );
 }
 
 function RootLayoutNav() {
@@ -128,6 +132,9 @@ function RootLayoutNav() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/SettingsScreen" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/GroundingScreen" options={{ headerShown: false }} />
+              <Stack.Screen name="screens/InsightsScreen" options={{ headerShown: false }} />
             <Stack.Screen name="sos" options={{ title: 'SOS' }} />
             <Stack.Screen name="auth/callback" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
@@ -137,6 +144,9 @@ function RootLayoutNav() {
     </SafeAreaProvider>
   );
 }
+
+
+
 
 
 

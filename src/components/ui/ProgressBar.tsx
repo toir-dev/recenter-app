@@ -9,10 +9,9 @@ type ProgressBarProps = {
   label?: string;
   theme?: ThemeName;
   style?: StyleProp<ViewStyle>;
-  className?: string;
 };
 
-export function ProgressBar({ progress, label, theme, style, className }: ProgressBarProps) {
+export function ProgressBar({ progress, label, theme, style }: ProgressBarProps) {
   const scheme = useColorScheme();
   const resolved = resolveThemeName(theme ?? scheme);
   const palette = themePalettes[resolved];
@@ -20,7 +19,6 @@ export function ProgressBar({ progress, label, theme, style, className }: Progre
 
   return (
     <View
-      className={className}
       style={[styles.container, { borderColor: palette.outline, backgroundColor: palette.surfaceAlt }, style]}>
       {label ? <Text style={[styles.label, { color: palette.muted }]}>{label}</Text> : null}
       <View style={[styles.track, { backgroundColor: palette.outline }]}
